@@ -15,6 +15,7 @@ public class TelegramBotService {
         this.telegramBot = telegramBot;
     }
 
+
     private Logger logger = LoggerFactory.getLogger(TelegramBotService.class);
 
     public void sendingMessage(Long chatId, String string) {
