@@ -3,28 +3,55 @@ package pro.sky.telegrambot.service;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
 public class TelegramBotService {
     private final TelegramBot telegramBot;
+
 
     public TelegramBotService(TelegramBot telegramBot) {
         this.telegramBot = telegramBot;
     }
 
     private Logger logger = LoggerFactory.getLogger(TelegramBotService.class);
-
-    public void sendingMessage(Long chatId, String string) {
-        String[] stringArray=string.split(" ");
-        String stringOutput;
-
-        SendMessage message = new SendMessage(String.valueOf(chatId), "Привет");
-
-
+   // public String answer() throws IOException {
+   //     return request();
+ //   }
+    String ss="";
+    public void sendingMessage(Long chatId, String string) throws IOException {
+        request();
+        SendMessage message = new SendMessage(String.valueOf(chatId), "Привет"+ss);
         controlSendingControl(telegramBot.execute(message));
+    }
+    public void receivingId(Long chatId,String messageText){
+        String[] stringArray=messageText.split(" ");
+        String comments = "";
+         if(stringArray.length!=2){
+            comments="Не верно введена имя пользователя";
+        }
+        SendMessage message = new SendMessage(String.valueOf(chatId), comments);
+        controlSendingControl(telegramBot.execute(message));
+
+    }
+    private void request()throws IOException {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url("http://localhost:8081/rule/stats")
+                .build();
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                ss= (response.body().string());
+            } else {
+                ss= ("Ошибка: " + response.code());
+            }
+        }
     }
 
     private void controlSendingControl(SendResponse sendResponse) {
