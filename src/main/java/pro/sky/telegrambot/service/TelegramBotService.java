@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @Service
 public class TelegramBotService {
@@ -22,34 +23,34 @@ public class TelegramBotService {
     }
 
     private Logger logger = LoggerFactory.getLogger(TelegramBotService.class);
-   // public String answer() throws IOException {
-   //     return request();
- //   }
-    String ss="";
+
+
     public void sendingMessage(Long chatId, String string) throws IOException {
-        request();
-        SendMessage message = new SendMessage(String.valueOf(chatId), "Привет"+ss);
+        SendMessage message = new SendMessage(String.valueOf(chatId), "Привет" + "\n" +
+                " справка по статистике срабатывания правил рекомендаций:\n" + request());
         controlSendingControl(telegramBot.execute(message));
     }
-    public void receivingId(Long chatId,String messageText){
-        String[] stringArray=messageText.split(" ");
+
+    public void receivingId(Long chatId, String messageText) {
+        String[] stringArray = messageText.split(" ");
         String comments = "";
-         if(stringArray.length!=2){
-            comments="Не верно введена имя пользователя";
+        if (stringArray.length != 2) {
+            comments = "Не верно введена имя пользователя";
         }
         SendMessage message = new SendMessage(String.valueOf(chatId), comments);
         controlSendingControl(telegramBot.execute(message));
 
     }
-    private void request()throws IOException {
+
+    private String request() throws IOException {
         OkHttpClient client = new OkHttpClient();
         Request request = new Request.Builder().url("http://localhost:8081/rule/stats")
                 .build();
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
-                ss= (response.body().string());
+                return (Objects.requireNonNull(response.body()).string());
             } else {
-                ss= ("Ошибка: " + response.code());
+                return "Ошибка: " + response.code();
             }
         }
     }
