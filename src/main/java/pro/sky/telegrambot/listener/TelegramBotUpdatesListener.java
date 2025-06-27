@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.service.TelegramBotService;
 
 import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.util.List;
 
 @Service
@@ -32,14 +33,26 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @Override
     public int process(List<Update> updates) {
         updates.forEach(update -> {
-            logger.info("Processing update: {}", update);
-            logger.debug("Processing update: {}", update);
+            //logger.info("Processing update: {}", update);
+            //logger.debug("Processing update: {}", update);
             String messageText;
             Long chatId = update.message().chat().id();
             if (update.message() != null && update.message().text() != null) {
                 messageText = update.message().text();
                 if (messageText.startsWith("/start")) {
-                    telegramBotService.sendingMessage(chatId, messageText);
+                    try {
+                        telegramBotService.sendingMessage(chatId);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                }
+                if (messageText.startsWith("/recommend")){
+                    try {
+                        telegramBotService.receivingId(chatId,messageText);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }// Process your updates here
         });
