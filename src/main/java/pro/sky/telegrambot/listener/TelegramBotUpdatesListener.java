@@ -41,7 +41,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 messageText = update.message().text();
                 if (messageText.startsWith("/start")) {
                     try {
-                        telegramBotService.sendingMessage(chatId, messageText);
+                        telegramBotService.sendingMessage(chatId);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

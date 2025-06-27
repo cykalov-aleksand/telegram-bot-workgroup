@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.model.OutputData;
+import pro.sky.telegrambot.model.Statistic;
 import pro.sky.telegrambot.model.UserParameter;
 
 import java.io.IOException;
@@ -27,51 +28,65 @@ public class TelegramBotService {
         this.telegramBot = telegramBot;
     }
 
+    OkHttpClient client = new OkHttpClient();
+    ObjectMapper objectUserParameterMapper = new ObjectMapper();
+    ObjectMapper objectOutputDataMapper = new ObjectMapper();
+
+
     private Logger logger = LoggerFactory.getLogger(TelegramBotService.class);
 
 
-    public void sendingMessage(Long chatId, String string) throws IOException {
+    public void sendingMessage(Long chatId) throws IOException {
+
+        String jsonStringReference = request("rule/stats");
+        List<Statistic> statistics = objectOutputDataMapper.readValue(jsonStringReference, new TypeReference<>() {
+        });
+        StringBuilder text = new StringBuilder();
+        for (Statistic variable : statistics) {
+            text.append(variable.toString()).append("\n");
+        }
         SendMessage message = new SendMessage(String.valueOf(chatId), "Привет" + "\n" +
-                " справка по статистике срабатывания правил рекомендаций:\n" + request("rule/stats"));
+                " справка по статистике срабатывания правил рекомендаций:\n\n" + text);
         controlSendingControl(telegramBot.execute(message));
     }
 
     public void receivingId(Long chatId, String messageText) throws IOException {
-        String stringJoin = "";
-        ObjectMapper objectMapper = new ObjectMapper();
-        ObjectMapper objectMapper1 = new ObjectMapper();
+
         String[] stringArray = messageText.split(" ");
-        String comments = "";
+        String comments;
         if (stringArray.length != 2) {
             comments = "Не верно введено имя пользователя";
         } else {
-             try {
-            stringJoin = request("recommendation/username/" + stringArray[1]);
-            UserParameter userParameter = objectMapper.readValue(stringJoin, UserParameter.class);
-            String stringJoin2 = request("recommendation/dynamic/" + userParameter.getId());
-            List<OutputData> outputData = objectMapper1.readValue(stringJoin2, new TypeReference<List<OutputData>>() {
-            });
-            comments = userParameter.getFirstName() + "  " + userParameter.getLastName() + "\n" + stringJoin2;
-        } catch (Exception e) {
-                 comments="Пользователь не найден";
-             }
-    }
+            try {
+                String jsonStringFirstLastName = request("recommendation/username/" + stringArray[1]);
+                UserParameter userParameter = objectUserParameterMapper.readValue(jsonStringFirstLastName,
+                        UserParameter.class);
+                String jsonStringRecommendedProducts = request("recommendation/dynamic/" + userParameter.getId());
+                List<OutputData> outputData = objectOutputDataMapper.readValue(jsonStringRecommendedProducts,
+                        new TypeReference<>() {
+                        });
+                StringBuilder textProductParameters = new StringBuilder();
+                for (OutputData variable : outputData) {
+                    textProductParameters.append("Продукт № (ID) - ").append(variable.getId()).append(" ;\n\n")
+                            .append(" Название продукта: ").append(variable.getName()).append(" ;\n\n")
+                            .append("Описание продукта : ").append(variable.getText()).append("\n\n");
+                }
+                comments = "Здравствуйте "+userParameter.getFirstName() + "  " + userParameter.getLastName() + "\n\n" +
+                        "новые продукты для Вас:\n"+textProductParameters;
+            } catch (Exception e) {
+                comments = "Пользователь не найден";
+            }
+        }
         SendMessage message = new SendMessage(String.valueOf(chatId), comments);
         controlSendingControl(telegramBot.execute(message));
 
     }
 
     private String request(String way) throws IOException {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder().url("http://localhost:8081/" + way)
-                .build();
+        Request request = new Request.Builder().url("http://localhost:8081/" + way).build();
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
-                if (response.code() == 200) {
-                    return (Objects.requireNonNull(response.body()).string());
-                } else {
-                    return "Пользователь не найден";
-                }
+                return (Objects.requireNonNull(response.body()).string());
             } else {
                 return "Ошибка: " + response.code();
             }
