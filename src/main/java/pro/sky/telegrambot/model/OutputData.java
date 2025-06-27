@@ -35,9 +35,9 @@ public class OutputData {
     @Override
     public String toString() {
         return "OutputData{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", text='" + text + '\'' +
+                "id=" + id +"\n"+
+                ", Название продукта ='" + name + '\n' +
+                ", Текст продукта='" + text + '\n' +
                 '}';
     }
 }

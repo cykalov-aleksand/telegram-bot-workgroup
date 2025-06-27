@@ -1,7 +1,9 @@
 package pro.sky.telegrambot.model;
 
-import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.util.UUID;
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserParameter {
     private UUID id;
     private String firstName;

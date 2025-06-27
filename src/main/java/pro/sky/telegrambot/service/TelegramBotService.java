@@ -1,5 +1,6 @@
 package pro.sky.telegrambot.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
@@ -14,6 +15,7 @@ import pro.sky.telegrambot.model.OutputData;
 import pro.sky.telegrambot.model.UserParameter;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -35,21 +37,25 @@ public class TelegramBotService {
     }
 
     public void receivingId(Long chatId, String messageText) throws IOException {
-        String stringJoin="";
-        ObjectMapper objectMapper=new ObjectMapper();
-        ObjectMapper objectMapper1=new ObjectMapper();
+        String stringJoin = "";
+        ObjectMapper objectMapper = new ObjectMapper();
+        ObjectMapper objectMapper1 = new ObjectMapper();
         String[] stringArray = messageText.split(" ");
         String comments = "";
         if (stringArray.length != 2) {
             comments = "Не верно введено имя пользователя";
         } else {
-           stringJoin = request("recommendation/username/" + stringArray[1]);
-            UserParameter userParameter=objectMapper.readValue(stringJoin, UserParameter.class);
-String stringJoin2=request("recommendation/dynamic/"+userParameter.getId());
-//            ObjectMapper objectMapper1=new ObjectMapper();
-//OutputData outputData=objectMapper1.readValue(stringJoin2,OutputData.class);
-            comments=userParameter.getFirstName()+"  "+userParameter.getLastName()+"\n"+stringJoin2;
-        }
+             try {
+            stringJoin = request("recommendation/username/" + stringArray[1]);
+            UserParameter userParameter = objectMapper.readValue(stringJoin, UserParameter.class);
+            String stringJoin2 = request("recommendation/dynamic/" + userParameter.getId());
+            List<OutputData> outputData = objectMapper1.readValue(stringJoin2, new TypeReference<List<OutputData>>() {
+            });
+            comments = userParameter.getFirstName() + "  " + userParameter.getLastName() + "\n" + stringJoin2;
+        } catch (Exception e) {
+                 comments="Пользователь не найден";
+             }
+    }
         SendMessage message = new SendMessage(String.valueOf(chatId), comments);
         controlSendingControl(telegramBot.execute(message));
 
@@ -60,17 +66,17 @@ String stringJoin2=request("recommendation/dynamic/"+userParameter.getId());
         Request request = new Request.Builder().url("http://localhost:8081/" + way)
                 .build();
         try (Response response = client.newCall(request).execute()) {
-           if (response.isSuccessful()) {
+            if (response.isSuccessful()) {
                 if (response.code() == 200) {
                     return (Objects.requireNonNull(response.body()).string());
                 } else {
-               return "Пользователь не найден";
-                    }
-               }else{
-            return "Ошибка: " + response.code();
+                    return "Пользователь не найден";
+                }
+            } else {
+                return "Ошибка: " + response.code();
+            }
         }
     }
-}
 
     private void controlSendingControl(SendResponse sendResponse) {
         if (sendResponse.isOk()) {
