@@ -2,12 +2,12 @@ package pro.sky.telegrambot.model;
 
 import java.util.UUID;
 
-public class InformationClient {
+public class UserParameter {
     private UUID id;
     private String firstName;
     private String lastName;
 
-    public InformationClient() {
+    public UserParameter() {
 
     }
 
