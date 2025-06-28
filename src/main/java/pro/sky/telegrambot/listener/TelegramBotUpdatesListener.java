@@ -37,26 +37,19 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             Long chatId = update.message().chat().id();
             if (update.message() != null && update.message().text() != null) {
                 messageText = update.message().text();
-                if (messageText.startsWith("/start")) {
-                    try {
+                try {
+                    if (messageText.startsWith("/start")) {
                         telegramBotService.sendingMessage(chatId);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                        if (messageText.startsWith("/recommend")) {
+                            telegramBotService.receivingId(chatId, messageText);
+                        }
+                        if (messageText.startsWith("/management/clear-caches")) {
+                            telegramBotService.requestClearCache(chatId);
+                        }
                     }
-                }
-                if (messageText.startsWith("/recommend")){
-                    try {
-                        telegramBotService.receivingId(chatId,messageText);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
-                if(messageText.startsWith("/management/clear-caches")){
-                    try {
-                        telegramBotService.requestClearCache(chatId);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+
                 }
             }
         });
