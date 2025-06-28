@@ -45,7 +45,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-
                 }
                 if (messageText.startsWith("/recommend")){
                     try {
@@ -54,7 +53,14 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                         throw new RuntimeException(e);
                     }
                 }
-            }// Process your updates here
+                if(messageText.startsWith("/management/clear-caches")){
+                    try {
+                        telegramBotService.requestClearCache();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
         });
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }

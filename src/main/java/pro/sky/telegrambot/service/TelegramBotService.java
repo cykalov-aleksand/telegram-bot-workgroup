@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.response.SendResponse;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -16,6 +14,8 @@ import pro.sky.telegrambot.model.Statistic;
 import pro.sky.telegrambot.model.UserParameter;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpRequest;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,7 +35,9 @@ public class TelegramBotService {
 
     private Logger logger = LoggerFactory.getLogger(TelegramBotService.class);
 
-
+public void requestClearCache() throws IOException {
+    requestPost("management/clear-caches","");
+}
     public void sendingMessage(Long chatId) throws IOException {
 
         String jsonStringReference = request("rule/stats");
@@ -81,6 +83,26 @@ public class TelegramBotService {
         controlSendingControl(telegramBot.execute(message));
 
     }
+    private String requestPost(String way,String stringJson)throws IOException {
+        String result = "";
+        RequestBody body = RequestBody.create(MediaType.parse("application/json"), stringJson);
+// Создаём запрос на основе URL и RequestBody
+        Request request = new Request.Builder()
+                .url("http://localhost:8081/" + way)
+                .post(body)
+                .build();
+// Выполняем запрос и получаем ответ
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                if(response.code()==200){
+ result="запрос выполнен удачно";
+                }
+             else {
+                result= "Ошибка: " + response.code();
+            }}}
+    return result;}
+
+
 
     private String request(String way) throws IOException {
         Request request = new Request.Builder().url("http://localhost:8081/" + way).build();
