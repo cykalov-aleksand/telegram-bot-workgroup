@@ -19,7 +19,7 @@ public class TextMessage {
     OkHttpClient client = new OkHttpClient();
     ObjectMapper objectUserParameterMapper = new ObjectMapper();
     ObjectMapper objectOutputDataMapper = new ObjectMapper();
-    ObjectMapper objectInfoBuilderMapper=new ObjectMapper();
+    ObjectMapper objectInfoBuilderMapper = new ObjectMapper();
 
     public String messageStart() throws IOException {
 
@@ -43,13 +43,14 @@ public class TextMessage {
             }
         }
     }
-    public String infoMessage(String service)throws IOException{
+
+    public String infoMessage(String service) throws IOException {
         System.out.println(service);
-        String jsonStringInfoService=request(service.substring(1));
-        InfoBuild infoBuild=objectInfoBuilderMapper.readValue(jsonStringInfoService,InfoBuild.class);
-        String line=infoBuild.toString();
-        return line;
+        String jsonStringInfoService = request(service.substring(1));
+        InfoBuild infoBuild = objectInfoBuilderMapper.readValue(jsonStringInfoService, InfoBuild.class);
+        return "Имя сервиса: " + infoBuild.getName() + "\n" + "№ версии: " + infoBuild.getVersion();
     }
+
     public String messageRecommendations(String messageText) {
         String[] stringArray = messageText.split(" ");
         String comments;
@@ -62,7 +63,8 @@ public class TextMessage {
                         UserParameter.class);
                 String jsonStringRecommendedProducts = request("recommendation/dynamic/" + userParameter.getId());
                 List<OutputData> outputData = objectOutputDataMapper.readValue(jsonStringRecommendedProducts,
-                        new TypeReference<>() { });
+                        new TypeReference<>() {
+                        });
                 StringBuilder textProductParameters = new StringBuilder();
                 for (OutputData variable : outputData) {
                     textProductParameters.append("Продукт № (ID) - ").append(variable.getId()).append(" ;\n\n")
