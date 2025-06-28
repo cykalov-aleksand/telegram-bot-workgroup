@@ -33,8 +33,6 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
     @Override
     public int process(List<Update> updates) {
         updates.forEach(update -> {
-            //logger.info("Processing update: {}", update);
-            //logger.debug("Processing update: {}", update);
             String messageText;
             Long chatId = update.message().chat().id();
             if (update.message() != null && update.message().text() != null) {
@@ -55,7 +53,7 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                 }
                 if(messageText.startsWith("/management/clear-caches")){
                     try {
-                        telegramBotService.requestClearCache();
+                        telegramBotService.requestClearCache(chatId);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

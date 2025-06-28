@@ -35,8 +35,9 @@ public class TelegramBotService {
 
     private Logger logger = LoggerFactory.getLogger(TelegramBotService.class);
 
-public void requestClearCache() throws IOException {
-    requestPost("management/clear-caches","");
+public void requestClearCache(Long chatId) throws IOException {
+    SendMessage message = new SendMessage(String.valueOf(chatId), requestPost("management/clear-caches",""));
+    controlSendingControl(telegramBot.execute(message));
 }
     public void sendingMessage(Long chatId) throws IOException {
 
@@ -95,7 +96,7 @@ public void requestClearCache() throws IOException {
         try (Response response = client.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 if(response.code()==200){
- result="запрос выполнен удачно";
+ result="запрос выполнен удачно кеш очищен";
                 }
              else {
                 result= "Ошибка: " + response.code();
