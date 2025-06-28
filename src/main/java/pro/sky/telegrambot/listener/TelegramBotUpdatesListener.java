@@ -55,6 +55,9 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
                         throw new RuntimeException(e);
                     }
                 }
+                if (messageText.startsWith("/help")) {
+                    telegramBotService.help(chatId);
+                }
             }
         });
         return UpdatesListener.CONFIRMED_UPDATES_ALL;

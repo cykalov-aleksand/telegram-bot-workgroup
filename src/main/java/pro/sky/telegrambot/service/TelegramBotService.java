@@ -32,7 +32,8 @@ public class TelegramBotService {
 
     public void sendingMessage(Long chatId) throws IOException {
         SendMessage message = new SendMessage(String.valueOf(chatId), "Привет" + "\n" +
-                " справка по статистике срабатывания правил рекомендаций:\n\n" + textMessage.messageStart());
+                " справка по статистике срабатывания правил рекомендаций:\n\n" + textMessage.messageStart() +
+                "\nдля ознакомления с командами бота введите команду\n /help ");
         controlSendingControl(telegramBot.execute(message));
     }
 
@@ -41,6 +42,7 @@ public class TelegramBotService {
         controlSendingControl(telegramBot.execute(message));
 
     }
+
     public void infoMessage(Long chatId, String string) throws IOException {
         String[] string1 = string.split("/");
         if (string1[2].equals("clear-caches")) {
@@ -57,6 +59,11 @@ public class TelegramBotService {
             return;
         }
         logger.info("Ошибка, сообщение не отправлено");
+    }
+
+    public void help(Long chatId) {
+        SendMessage message = new SendMessage(String.valueOf(chatId), textMessage.textHelp());
+        controlSendingControl(telegramBot.execute(message));
     }
 }
 
