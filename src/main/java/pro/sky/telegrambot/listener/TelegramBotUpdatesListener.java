@@ -3,8 +3,6 @@ package pro.sky.telegrambot.listener;
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.UpdatesListener;
 import com.pengrad.telegrambot.model.Update;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pro.sky.telegrambot.service.TelegramBotService;
@@ -17,7 +15,6 @@ import java.util.List;
 public class TelegramBotUpdatesListener implements UpdatesListener {
     private final TelegramBotService telegramBotService;
     private final TelegramBot telegramBot;
-    private Logger logger = LoggerFactory.getLogger(TelegramBotUpdatesListener.class);
 
     @Autowired
     public TelegramBotUpdatesListener(TelegramBotService telegramBotService, TelegramBot telegramBot) {
@@ -37,19 +34,26 @@ public class TelegramBotUpdatesListener implements UpdatesListener {
             Long chatId = update.message().chat().id();
             if (update.message() != null && update.message().text() != null) {
                 messageText = update.message().text();
-                try {
-                    if (messageText.startsWith("/start")) {
+                if (messageText.startsWith("/start")) {
+                    try {
                         telegramBotService.sendingMessage(chatId);
-                        if (messageText.startsWith("/recommend")) {
-                            telegramBotService.receivingId(chatId, messageText);
-                        }
-                        if (messageText.startsWith("/management/clear-caches")) {
-                            telegramBotService.requestClearCache(chatId);
-                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-
+                }
+                if (messageText.startsWith("/recommend")) {
+                    try {
+                        telegramBotService.receivingId(chatId, messageText);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                if (messageText.startsWith("/management")) {
+                    try {
+                        telegramBotService.infoMessage(chatId, messageText);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
         });

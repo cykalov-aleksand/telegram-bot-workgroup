@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.springframework.stereotype.Component;
+import pro.sky.telegrambot.model.InfoBuild;
 import pro.sky.telegrambot.model.OutputData;
 import pro.sky.telegrambot.model.Statistic;
 import pro.sky.telegrambot.model.UserParameter;
@@ -18,6 +19,7 @@ public class TextMessage {
     OkHttpClient client = new OkHttpClient();
     ObjectMapper objectUserParameterMapper = new ObjectMapper();
     ObjectMapper objectOutputDataMapper = new ObjectMapper();
+    ObjectMapper objectInfoBuilderMapper=new ObjectMapper();
 
     public String messageStart() throws IOException {
 
@@ -41,7 +43,13 @@ public class TextMessage {
             }
         }
     }
-
+    public String infoMessage(String service)throws IOException{
+        System.out.println(service);
+        String jsonStringInfoService=request(service.substring(1));
+        InfoBuild infoBuild=objectInfoBuilderMapper.readValue(jsonStringInfoService,InfoBuild.class);
+        String line=infoBuild.toString();
+        return line;
+    }
     public String messageRecommendations(String messageText) {
         String[] stringArray = messageText.split(" ");
         String comments;
@@ -54,8 +62,7 @@ public class TextMessage {
                         UserParameter.class);
                 String jsonStringRecommendedProducts = request("recommendation/dynamic/" + userParameter.getId());
                 List<OutputData> outputData = objectOutputDataMapper.readValue(jsonStringRecommendedProducts,
-                        new TypeReference<>() {
-                        });
+                        new TypeReference<>() { });
                 StringBuilder textProductParameters = new StringBuilder();
                 for (OutputData variable : outputData) {
                     textProductParameters.append("Продукт № (ID) - ").append(variable.getId()).append(" ;\n\n")
