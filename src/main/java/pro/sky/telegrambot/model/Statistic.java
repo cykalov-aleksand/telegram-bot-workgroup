@@ -6,7 +6,9 @@ public class Statistic {
     @JsonProperty("rule_id")
     private Long ruleId;
     private Integer count;
-    public Statistic(){}
+
+    public Statistic() {
+    }
 
     public Long getRuleId() {
         return ruleId;
@@ -28,7 +30,7 @@ public class Statistic {
     public String toString() {
         return "Statistic{" +
                 "rule_id=" + ruleId +
-                ", count=" + count +"; "+
+                ", count=" + count + "; " +
                 '}';
     }
 }

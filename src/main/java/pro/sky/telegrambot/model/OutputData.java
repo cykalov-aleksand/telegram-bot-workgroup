@@ -6,7 +6,9 @@ public class OutputData {
     private UUID id;
     private String name;
     private String text;
-    public OutputData(){}
+
+    public OutputData() {
+    }
 
     public UUID getId() {
         return id;
@@ -35,7 +37,7 @@ public class OutputData {
     @Override
     public String toString() {
         return "OutputData{" +
-                "id=" + id +"\n"+
+                "id=" + id + "\n" +
                 ", Название продукта ='" + name + '\n' +
                 ", Текст продукта='" + text + '\n' +
                 '}';
