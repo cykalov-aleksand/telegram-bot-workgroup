@@ -23,9 +23,9 @@ public class InfoBuild {
 
     @Override
     public String toString() {
-        return "InfoBuild{" +
-                "name='" + name + '\'' +
-                ", version='" + version + '\'' +
-                '}';
+        return "{" +"\n"+
+                "name: " + name + "\n"+
+                "version: " + version + "\n" +
+                "}";
     }
 }
