@@ -3,7 +3,9 @@ package pro.sky.telegrambot.model;
 public class InfoBuild {
     private String name;
     private String version;
-    InfoBuild(){}
+
+    InfoBuild() {
+    }
 
     public String getName() {
         return name;
@@ -23,8 +25,8 @@ public class InfoBuild {
 
     @Override
     public String toString() {
-        return "{" +"\n"+
-                "name: " + name + "\n"+
+        return "{" + "\n" +
+                "name: " + name + "\n" +
                 "version: " + version + "\n" +
                 "}";
     }

@@ -21,12 +21,13 @@ public class TextMessage {
     ObjectMapper objectOutputDataMapper = new ObjectMapper();
     ObjectMapper objectInfoBuilderMapper = new ObjectMapper();
 
-    public String textHelp(){
-       return "Команды отрабатываемые нашим ботом: \n/start  - бот приветствует пользователя и печатает справку;\n"+
+    public String textHelp() {
+        return "Команды отрабатываемые нашим ботом: \n/start  - бот приветствует пользователя и печатает справку;\n" +
                 "/recomend <имя пользователя>  - команда возвращает рекомендации для пользователя;\n" +
-                "/management/clear-caches  - команда очищает все закешированные результаты;\n\n"+
+                "/management/clear-caches  - команда очищает все закешированные результаты;\n\n" +
                 "/management/info - команда выводит имя сервиса и версию сервиса;\n";
     }
+
     public String messageStart() throws IOException {
         String jsonStringReference = request("rule/stats");
         List<Statistic> statistics = objectOutputDataMapper.readValue(jsonStringReference, new TypeReference<>() {
