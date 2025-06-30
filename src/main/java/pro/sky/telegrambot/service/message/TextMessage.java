@@ -72,7 +72,7 @@ public class TextMessage {
                 List<OutputData> outputData = objectOutputDataMapper.readValue(jsonStringRecommendedProducts,
                         new TypeReference<>() {
                         });
-                if(outputData.size()!=0) {
+                if(!outputData.isEmpty()) {
                     StringBuilder textProductParameters = new StringBuilder();
                     for (OutputData variable : outputData) {
                         textProductParameters.append("Продукт № (ID) - ").append(variable.getId()).append(" ;\n\n")
