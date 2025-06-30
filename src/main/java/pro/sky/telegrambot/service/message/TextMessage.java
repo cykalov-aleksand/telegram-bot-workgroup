@@ -21,18 +21,13 @@ public class TextMessage {
     ObjectMapper objectOutputDataMapper = new ObjectMapper();
     ObjectMapper objectInfoBuilderMapper = new ObjectMapper();
 
-    public String textHelp(){
-       return "Команды отрабатываемые нашим ботом: \n/start  - бот приветствует пользователя и печатает справку;\n"+
+    public String textHelp() {
+        return "Команды отрабатываемые нашим ботом: \n/start  - бот приветствует пользователя и печатает справку;\n" +
                 "/recomend <имя пользователя>  - команда возвращает рекомендации для пользователя;\n" +
-                "/management/clear-caches  - команда очищает все закешированные результаты;\n\n"+
-                "/management/info/changeService - команда выводит имя сервиса ChangeService и версию сервиса;\n\n"+
-                "/management/info/clientService - команда выводит имя сервиса ClientService и версию сервиса;\n\n"+
-                "/management/info/dinamicClientService - команда выводит имя сервиса DinamicClientService и версию сервиса;\n\n"+
-                "/management/info/request/dinamicService - команда выводит имя сервиса DinamicService и версию сервиса;\n\n"+
-                "/management/info/request/ruleService - команда выводит имя сервиса RuleService и версию сервиса;\n\n"+
-                "/management/info/logic/logic - команда выводит имя компонента Logic и версию сервиса;\n\n"+
-                "/management/info/logic/logicDinamic - команда выводит имя компонента LogicDinamic и версию сервиса;\n\n";
+                "/management/clear-caches  - команда очищает все закешированные результаты;\n\n" +
+                "/management/info - команда выводит имя сервиса и версию сервиса;\n";
     }
+
     public String messageStart() throws IOException {
         String jsonStringReference = request("rule/stats");
         List<Statistic> statistics = objectOutputDataMapper.readValue(jsonStringReference, new TypeReference<>() {
@@ -59,7 +54,8 @@ public class TextMessage {
         System.out.println(service);
         String jsonStringInfoService = request(service.substring(1));
         InfoBuild infoBuild = objectInfoBuilderMapper.readValue(jsonStringInfoService, InfoBuild.class);
-        return "Имя сервиса: " + infoBuild.getName() + "\n" + "№ версии: " + infoBuild.getVersion();
+        return infoBuild.toString();
+        //return "Имя сервиса: " + infoBuild.getName() + "\n" + "№ версии: " + infoBuild.getVersion();
     }
 
     public String messageRecommendations(String messageText) {
@@ -76,14 +72,19 @@ public class TextMessage {
                 List<OutputData> outputData = objectOutputDataMapper.readValue(jsonStringRecommendedProducts,
                         new TypeReference<>() {
                         });
-                StringBuilder textProductParameters = new StringBuilder();
-                for (OutputData variable : outputData) {
-                    textProductParameters.append("Продукт № (ID) - ").append(variable.getId()).append(" ;\n\n")
-                            .append(" Название продукта: ").append(variable.getName()).append(" ;\n\n")
-                            .append("Описание продукта : ").append(variable.getText()).append("\n\n");
+                if(!outputData.isEmpty()) {
+                    StringBuilder textProductParameters = new StringBuilder();
+                    for (OutputData variable : outputData) {
+                        textProductParameters.append("Продукт № (ID) - ").append(variable.getId()).append(" ;\n\n")
+                                .append(" Название продукта: ").append(variable.getName()).append(" ;\n\n")
+                                .append("Описание продукта : ").append(variable.getText()).append("\n\n");
+                    }
+                    comments = "Здравствуйте " + userParameter.getFirstName() + "  " + userParameter.getLastName() + "\n\n" +
+                            "новые продукты для Вас:\n" + textProductParameters;
+                }else{
+                    comments = "Здравствуйте " + userParameter.getFirstName() + "  " + userParameter.getLastName() + "\n\n" +
+                            "рекомендованных продуктов для Вас нет\n";
                 }
-                comments = "Здравствуйте " + userParameter.getFirstName() + "  " + userParameter.getLastName() + "\n\n" +
-                        "новые продукты для Вас:\n" + textProductParameters;
             } catch (Exception e) {
                 comments = "Пользователь не найден";
             }
