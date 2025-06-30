@@ -72,14 +72,19 @@ public class TextMessage {
                 List<OutputData> outputData = objectOutputDataMapper.readValue(jsonStringRecommendedProducts,
                         new TypeReference<>() {
                         });
-                StringBuilder textProductParameters = new StringBuilder();
-                for (OutputData variable : outputData) {
-                    textProductParameters.append("Продукт № (ID) - ").append(variable.getId()).append(" ;\n\n")
-                            .append(" Название продукта: ").append(variable.getName()).append(" ;\n\n")
-                            .append("Описание продукта : ").append(variable.getText()).append("\n\n");
+                if(outputData.size()!=0) {
+                    StringBuilder textProductParameters = new StringBuilder();
+                    for (OutputData variable : outputData) {
+                        textProductParameters.append("Продукт № (ID) - ").append(variable.getId()).append(" ;\n\n")
+                                .append(" Название продукта: ").append(variable.getName()).append(" ;\n\n")
+                                .append("Описание продукта : ").append(variable.getText()).append("\n\n");
+                    }
+                    comments = "Здравствуйте " + userParameter.getFirstName() + "  " + userParameter.getLastName() + "\n\n" +
+                            "новые продукты для Вас:\n" + textProductParameters;
+                }else{
+                    comments = "Здравствуйте " + userParameter.getFirstName() + "  " + userParameter.getLastName() + "\n\n" +
+                            "рекомендованных продуктов для Вас нет\n";
                 }
-                comments = "Здравствуйте " + userParameter.getFirstName() + "  " + userParameter.getLastName() + "\n\n" +
-                        "новые продукты для Вас:\n" + textProductParameters;
             } catch (Exception e) {
                 comments = "Пользователь не найден";
             }
