@@ -19,7 +19,6 @@ public class TelegramBotService {
     private final TelegramBot telegramBot;
     private final TextMessage textMessage;
 
-
     public TelegramBotService(TelegramBot telegramBot, TextMessage textMessage) {
         this.telegramBot = telegramBot;
         this.textMessage = textMessage;
